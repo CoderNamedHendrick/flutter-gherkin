@@ -1,0 +1,11 @@
+.dart_tool/
+build/
+.tool-cache/
+.test-work/
+**/gherkin/evidence/
+**/gherkin/local.*
+**/test_bundle.dart
+.patrol.env
+.DS_Store
+__pycache__/
+dist/

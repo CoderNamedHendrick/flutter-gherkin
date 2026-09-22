@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "app_root": ".",
+  "entrypoint": "lib/main.dart",
+  "flutter_command": [
+    "flutter"
+  ],
+  "flavor": null,
+  "environment": "local",
+  "allowed_environments": [
+    "local"
+  ],
+  "production": false,
+  "dart_define_files": [],
+  "default_device": null,
+  "platforms": [
+    "ios",
+    "android"
+  ],
+  "suite": [],
+  "fixtures": {},
+  "actors": {},
+  "marionette": {
+    "preference": "auto"
+  },
+  "patrol": {
+    "enabled": true,
+    "preference": "auto",
+    "bootstrap": "gherkin/support/patrol_bootstrap.dart",
+    "command": [
+      "dart",
+      "run",
+      "patrol_cli:main"
+    ]
+  },
+  "agent": {
+    "name": null,
+    "config_path": null
+  },
+  "public_text_keys": [
+    "name_field"
+  ],
+  "sensitive_keys": []
+}
