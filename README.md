@@ -6,16 +6,14 @@ Features are the source of truth. This repository is an Agent Skills package, no
 agent plugin or a global CLI.
 
 ```sh
-npx skills add <owner>/flutter-gherkin --skill gherkin -a universal
+npx skills add CoderNamedHendrick/flutter-gherkin --skill gherkin -a universal
 # Local installation, from the target project:
 npx skills add /path/to/flutter-gherkin --skill gherkin -a universal
 ```
 
+The skill is available from [CoderNamedHendrick/flutter-gherkin](https://github.com/CoderNamedHendrick/flutter-gherkin).
 The distribution is named `flutter-gherkin`; the installed skill remains `gherkin`.
-Version 0.1.0 is prepared for publication. Replace `<owner>` with the GitHub account or
-organization hosting the repository. See [publishing instructions](PUBLISHING.md) for
-the proposed destination, release bundle and remaining publication steps. No repository
-has been published yet. Use `$gherkin` where supported, or ask your agent naturally:
+Use `$gherkin` where supported, or ask your agent naturally:
 
 ```text
 gherkin install
