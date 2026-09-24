@@ -34,9 +34,9 @@ gherkin/
   README.md
   features/
   fixtures/
-  generated/patrol/
   evidence/{screenshots,logs}/
   support/
+integration_test/       # generated Patrol tests, inside the Flutter app
 lib/gherkin_harness/     # inside the Flutter app
 ```
 

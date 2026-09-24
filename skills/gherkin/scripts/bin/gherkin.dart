@@ -218,7 +218,7 @@ Future<void> main(List<String> arguments) async {
           final result = await Process.run(c.flutter.first, [
             ...c.flutter.skip(1),
             'analyze',
-            p.join(root, 'gherkin/generated/patrol'),
+            c.patrolTestDirectory,
             p.join(root, 'gherkin/support'),
           ], workingDirectory: c.appRoot);
           if (result.exitCode != 0) {

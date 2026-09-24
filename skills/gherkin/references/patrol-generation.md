@@ -5,8 +5,9 @@ without the skill. Validate all selected features, fixtures, backend support and
 status before writing. Actor switching and manual photo-picker steps are rejected,
 not reduced to incomplete tests. Existing app bootstrap integration is required.
 
-Run generate-patrol. One file per feature, one patrolTest per scenario, with feature +
-scenario display name and inherited tags. Background steps repeat per scenario. Nested
+Run generate-patrol. Write tests to `integration_test/` in the Flutter app root
+(`app_root`), alongside `pubspec.yaml`. One file per feature, one patrolTest per
+scenario, with feature + scenario display name and inherited tags. Background steps repeat per scenario. Nested
 feature folders are mirrored, avoiding basename collisions. The generated header names
 the source and digests source/config inputs. No timestamp appears in generated output.
 Dart strings escape quotes, backslashes, controls and dollar interpolation. Helpers
@@ -34,7 +35,7 @@ never delete unrelated hand-written tests automatically.
 
 After analysis, prefer the loaded Patrol server's advertised run capability for one
 target. Verify reported completion/status and capture evidence. CLI fallback uses patrol.command (default patrol):
-`patrol test -t gherkin/generated/patrol/login_test.dart` from the Flutter root, with
+`patrol test -t integration_test/login_test.dart` from the Flutter root, with
 configured device, flavor and dart-define files including GHERKIN_ENVIRONMENT. Do not
 pass INTEGRATION_TEST=true to the normal application main in Patrol. Run whole suites
 with patrol test. Tests are not executed by `flutter test`.

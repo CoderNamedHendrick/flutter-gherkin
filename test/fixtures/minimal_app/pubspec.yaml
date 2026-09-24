@@ -26,4 +26,4 @@ patrol:
     bundle_id: dev.gherkin.minimalApp
   android:
     package_name: dev.gherkin.minimal_app
-  test_directory: gherkin/generated/patrol
+  test_directory: integration_test

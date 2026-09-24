@@ -3,7 +3,7 @@
 // Inputs SHA256: c36feabbaed4966455053da260bc2064411c5c01afce66db02315c2d42b2f8c3
 
 import 'package:patrol/patrol.dart';
-import "../../support/patrol_bootstrap.dart";
+import "../gherkin/support/patrol_bootstrap.dart";
 
 void main() {
   patrolTest("Native API compilation: Return to home", ($) async {

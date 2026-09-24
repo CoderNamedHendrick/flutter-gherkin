@@ -46,7 +46,6 @@ Future<List<Map<String, String>>> doctor(
       [
             'features',
             'fixtures',
-            'generated/patrol',
             'evidence/screenshots',
             'evidence/logs',
             'support',
@@ -89,6 +88,12 @@ Future<List<Map<String, String>>> doctor(
     ...?pub['dev_dependencies'] as Map?,
   };
   final patrol = c?.patrol['enabled'] == true;
+  add(
+    'Patrol test directory',
+    Directory(p.join(app, 'integration_test')).existsSync(),
+    'Expected integration_test/ in the Flutter app root',
+    required: patrol,
+  );
   final patrolCommand = List<String>.from(c?.patrol['command'] ?? ['patrol']);
   add(
     'Selected Patrol command',
@@ -134,8 +139,8 @@ Future<List<Map<String, String>>> doctor(
   );
   add(
     'Patrol configuration',
-    (pub['patrol'] as Map?)?['test_directory'] != null,
-    'Expected configured generated directory',
+    (pub['patrol'] as Map?)?['test_directory'] == 'integration_test',
+    'Expected patrol.test_directory: integration_test',
     required: patrol,
   );
   for (final platform in ['android', 'ios']) {

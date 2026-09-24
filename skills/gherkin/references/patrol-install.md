@@ -13,9 +13,14 @@ avoiding a global version conflict, but verify its current executable name first
 Merge the pubspec patrol block; preserve unrelated settings. Set app_name, Android
 application ID and iOS bundle ID from actual build configuration. `patrol-directory`
 sets test_directory without destroying other fields and refuses a conflicting existing
-suite location. For nested apps it computes the relative path from pubspec to the
-root's gherkin/generated/patrol. Keep generated tests inside the Flutter package where
-possible so imports and analysis resolve normally.
+suite location. Use `test_directory: integration_test` in the Flutter app's pubspec,
+including for nested apps. Generated tests live in that app's `integration_test/`.
+
+For an existing installation using `gherkin/generated/patrol`, regenerate into
+`integration_test/`, update the pubspec setting and any explicit CI test targets,
+then remove the superseded generated files after checking the new output. Preserve
+hand-written tests and relocate any intended Patrol smoke tests with their imports
+adjusted. The helper refuses to overwrite a hand-written test with the same path.
 
 ## Android
 

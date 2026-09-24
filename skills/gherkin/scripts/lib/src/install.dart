@@ -173,16 +173,16 @@ List<String> scaffold(
   for (final dir in [
     'features',
     'fixtures',
-    'generated/patrol',
     'evidence/screenshots',
     'evidence/logs',
     'support',
   ]) {
     Directory(inside(root, 'gherkin/$dir')).createSync(recursive: true);
   }
+  Directory(inside(app, 'integration_test')).createSync(recursive: true);
   create(
     'gherkin/README.md',
-    '# App Gherkin tests\n\nEdit features, regenerate and commit Patrol output. Evidence and local secrets are ignored. Run check-generated in CI. Configure fixture adapters before using them. See the installed gherkin skill for workflows.\n',
+    '# App Gherkin tests\n\nEdit features, regenerate and commit Patrol output in the Flutter app root’s integration_test/ directory. Evidence and local secrets are ignored. Run check-generated in CI. Configure fixture adapters before using them. See the installed gherkin skill for workflows.\n',
   );
   for (final name in ['binding.dart', 'recorder.dart']) {
     create(
@@ -222,10 +222,7 @@ void configurePatrolDirectory(ProjectConfig config) {
   final editor = YamlEditor(f.readAsStringSync());
   final data = loadYaml(f.readAsStringSync()) as Map;
   final relative = p
-      .relative(
-        p.join(config.root, 'gherkin/generated/patrol'),
-        from: config.appRoot,
-      )
+      .relative(config.patrolTestDirectory, from: config.appRoot)
       .replaceAll('\\', '/');
   if (data['patrol'] == null) {
     editor.update(['patrol'], {'test_directory': relative});

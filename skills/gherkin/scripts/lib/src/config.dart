@@ -35,6 +35,7 @@ class ProjectConfig {
     }
   }
   String get appRoot => inside(root, data['app_root'] as String);
+  String get patrolTestDirectory => inside(appRoot, 'integration_test');
   String get entrypoint => data['entrypoint'] as String;
   String get environment => data['environment'] as String;
   List<String> get flutter => List<String>.from(data['flutter_command']);

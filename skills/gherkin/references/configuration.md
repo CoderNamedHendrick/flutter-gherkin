@@ -3,8 +3,9 @@
 `--root` is the test-owning project root. For monorepos, select a Flutter app explicitly;
 `app_root` is relative to that root. The simplest placement is inside each app. All
 features/evidence stay under the selected root's `gherkin/`, runtime code under the
-Flutter app's `lib/gherkin_harness/`. Scaffolding writes JSON-compatible YAML and never
-rewrites existing config. The parser accepts ordinary YAML too.
+Flutter app's `lib/gherkin_harness/`, and generated Patrol tests under the Flutter
+app's `integration_test/` beside its `pubspec.yaml`, including for nested apps.
+Scaffolding writes JSON-compatible YAML and never rewrites existing config. The parser accepts ordinary YAML too.
 
 ```yaml
 version: 1

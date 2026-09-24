@@ -23,7 +23,7 @@ For exact helper commands read [tooling](references/tooling.md). Resolve this sk
 
 ## Shared contract
 
-- `.feature` files under project-root `gherkin/features/` are authoritative. Generated Patrol files are committed derived artifacts; use `check-generated` in CI. Evidence and local credentials are ignored.
+- `.feature` files under project-root `gherkin/features/` are authoritative. Generated Patrol files belong in the Flutter app root’s `integration_test/` directory and are committed derived artifacts; use `check-generated` in CI. Evidence and local credentials are ignored.
 - Validate the complete selected suite before driving a device or generating anything. The initial dialect is closed. Never reinterpret unknown prose, omit unsupported steps, or mistake a successful action for a verified outcome.
 - Discover loaded MCP capabilities and use their advertised schemas. Prefer appropriate loaded Marionette/Patrol tools; use their CLI fallback when absent. No vendor tool prefixes are assumed. See [capabilities](references/capabilities.md).
 - Detect the actual host before merging one agent's MCP config. Ask if ambiguous. Never configure every agent or overwrite an existing entry. Registration is not proof tools are loaded. Restart only blocks work that requires the new tools; CLI can continue.
