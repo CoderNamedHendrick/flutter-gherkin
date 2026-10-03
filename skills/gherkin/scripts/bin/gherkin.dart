@@ -21,6 +21,7 @@ Future<void> main(List<String> arguments) async {
     ..addMultiOption('platforms', defaultsTo: ['ios', 'android'])
     ..addOption('device')
     ..addOption('uri')
+    ..addOption('backend', allowed: Backend.values.map((b) => b.name).toList())
     ..addOption('log')
     ..addOption('name')
     ..addOption('manifest')
@@ -196,6 +197,17 @@ Future<void> main(List<String> arguments) async {
         .toList();
     switch (command) {
       case 'validate':
+        for (final feature in features) {
+          // Even syntax-only validation resolves fixture definitions.
+          feature.allSteps.expand(c.expand).toList();
+          if (args['backend'] != null) {
+            validateSupport(
+              feature,
+              Backend.values.byName(args['backend'] as String),
+              expand: c.expand,
+            );
+          }
+        }
         output({
           'valid': true,
           'features': [
@@ -233,11 +245,6 @@ Future<void> main(List<String> arguments) async {
         final uri = args['uri'] as String?;
         if (uri == null) {
           throw GherkinException('--uri required; launch/reconnect first');
-        }
-        if (features.any((f) => f.allSteps.any((s) => s.kind == 'actor'))) {
-          throw GherkinException(
-            'Multi-device replay requires dedicated live MCP connections; CLI fallback is single-device only',
-          );
         }
         final report = await runSuite(c, features, {
           'default': CliDriver(uri),

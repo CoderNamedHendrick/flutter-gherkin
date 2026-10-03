@@ -39,6 +39,24 @@ class ProjectConfig {
   String get entrypoint => data['entrypoint'] as String;
   String get environment => data['environment'] as String;
   List<String> get flutter => List<String>.from(data['flutter_command']);
+  List<String> get dart {
+    if (data['dart_command'] != null) {
+      return List<String>.from(data['dart_command']);
+    }
+    final command = [...flutter];
+    final executable = p.basename(command.last);
+    if (executable != 'flutter' && executable != 'flutter.bat') {
+      throw GherkinException(
+        'Set dart_command to the Dart SDK matching flutter_command',
+      );
+    }
+    final dartName = executable == 'flutter.bat' ? 'dart.bat' : 'dart';
+    command[command.length - 1] = command.last == executable
+        ? dartName
+        : p.join(p.dirname(command.last), dartName);
+    return command;
+  }
+
   List<String> get defines =>
       List<String>.from(data['dart_define_files'] ?? []);
   List<String> get suite => List<String>.from(data['suite'] ?? []);
@@ -67,6 +85,7 @@ class ProjectConfig {
       'fixtures',
       'actors',
       'flutter_command',
+      'dart_command',
       'marionette',
       'patrol',
       'agent',
@@ -90,6 +109,7 @@ class ProjectConfig {
       }
     }
     for (final k in [
+      'dart_command',
       'suite',
       'dart_define_files',
       'sensitive_keys',
@@ -99,6 +119,13 @@ class ProjectConfig {
           (data[k] is! List || (data[k] as List).any((v) => v is! String))) {
         throw GherkinException('$k must be a string list');
       }
+    }
+    if (data['dart_command'] is List &&
+        ((data['dart_command'] as List).isEmpty ||
+            (data['dart_command'] as List).any((v) => v == ''))) {
+      throw GherkinException(
+        'dart_command must be a non-empty command argument list',
+      );
     }
     if (!(data['allowed_environments'] as List).contains(environment)) {
       throw GherkinException('environment is not in allowed_environments');
@@ -180,7 +207,7 @@ class ProjectConfig {
       for (final raw in e.value as List) {
         final s = parseStep(raw as String, 0);
         if (['fixture', 'actor', 'environment'].contains(s.kind) ||
-            s.support != Support.both) {
+            ![Support.both, Support.mcpAndPatrol].contains(s.support)) {
           throw GherkinException(
             'fixture adapters must contain concrete portable actions/assertions',
           );

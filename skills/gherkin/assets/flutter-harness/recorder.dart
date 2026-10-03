@@ -39,16 +39,21 @@ class GherkinRecorder {
     (sink ?? debugPrintSynchronously)(line);
   }
 
-  void text(String? key, String value, {bool protected = false}) {
+  void text(
+    String? key,
+    String value, {
+    bool protected = false,
+    String? focus,
+  }) {
     final redact = protected || sensitive(key);
-    final id = (key ?? 'unkeyed_field').replaceAll(
-      RegExp(r'[^A-Za-z0-9_]'),
-      '_',
-    );
+    final id =
+        (key ?? (focus == null ? 'unkeyed_field' : 'unkeyed_field_$focus'))
+            .replaceAll(RegExp(r'[^A-Za-z0-9_]'), '_');
     emit('enter_text', {
       'key': key,
       'value': redact ? '\${fixture:$id}' : value,
       'sensitive': redact,
+      'focus': ?focus,
     });
   }
 
@@ -98,6 +103,7 @@ class _HarnessState extends State<GherkinRecordingHarness> {
   EditableText? _editable;
   String? _key;
   String? _last;
+  int _focusSequence = 0;
   bool _multitouch = false;
   @override
   void initState() {
@@ -221,7 +227,12 @@ class _HarnessState extends State<GherkinRecordingHarness> {
       }
     }
     final next = found?.widget as EditableText?;
-    if (identical(next?.controller, _controller)) return;
+    if (identical(next?.focusNode, _editable?.focusNode) &&
+        identical(next?.controller, _controller)) {
+      return;
+    }
+    _focusSequence++;
+    widget.recorder.emit('focus', {'focus': 'f$_focusSequence'});
     _controller?.removeListener(_changed);
     _editable = next;
     _controller = next?.controller;
@@ -243,7 +254,12 @@ class _HarnessState extends State<GherkinRecordingHarness> {
           r'password|oneTimeCode|creditCard',
           caseSensitive: false,
         ).hasMatch(hints);
-    widget.recorder.text(_key, value, protected: protected);
+    widget.recorder.text(
+      _key,
+      value,
+      protected: protected,
+      focus: 'f$_focusSequence',
+    );
   }
 
   @override

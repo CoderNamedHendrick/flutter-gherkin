@@ -24,6 +24,7 @@ For exact helper commands read [tooling](references/tooling.md). Resolve this sk
 ## Shared contract
 
 - `.feature` files under project-root `gherkin/features/` are authoritative. Generated Patrol files belong in the Flutter app root’s `integration_test/` directory and are committed derived artifacts; use `check-generated` in CI. Evidence and local credentials are ignored.
+- Respect the Flutter project’s existing analyzer and formatter configuration. Never create `integration_test/analysis_options.yaml`, suppress lints, or weaken root rules to accommodate generated code; correct the generator instead.
 - Validate the complete selected suite before driving a device or generating anything. The initial dialect is closed. Never reinterpret unknown prose, omit unsupported steps, or mistake a successful action for a verified outcome.
 - Discover loaded MCP capabilities and use their advertised schemas. Prefer appropriate loaded Marionette/Patrol tools; use their CLI fallback when absent. No vendor tool prefixes are assumed. See [capabilities](references/capabilities.md).
 - Detect the actual host before merging one agent's MCP config. Ask if ambiguous. Never configure every agent or overwrite an existing entry. Registration is not proof tools are loaded. Restart only blocks work that requires the new tools; CLI can continue.
@@ -31,7 +32,7 @@ For exact helper commands read [tooling](references/tooling.md). Resolve this sk
 - Inspect bootstrap before edits. Marionette must claim the binding first, only in non-release integration runs, never in widget/Patrol tests. Patrol pumps a separately created app root; it does not invoke app `main()`.
 - Confirm app root, entrypoint, device, platforms, and allowed environment. Never assume flavors or a named staging environment. Production requires explicit config opt-in and renewed user confirmation for each execution.
 - Record only user actions until they say finished. Do not infer business assertions from routes. Ask for meaningful assertions. Get approval before adding proposed keys to app code.
-- Redact sensitive input at capture, before it reaches logs. Passwords, OTPs, card data and unclassified fields use placeholders. Never print resolved secrets or commit them.
+- Redact sensitive recorder input at capture, before it reaches logs. Application logs need separate filtering; see [record](references/record.md). Passwords, OTPs, card data and unclassified fields use placeholders. Never print resolved secrets or commit them.
 - One driver per device. Multi-device steps execute serially with a dedicated live MCP connection per actor. Reject multi-device CLI replay and Patrol generation; see [multi-device](references/multi-device.md).
 - No branch operations, commits, pushes, publishing, PRs, bug intake, trackers, or regression bookkeeping are part of this skill.
 

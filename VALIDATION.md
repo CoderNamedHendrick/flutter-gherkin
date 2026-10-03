@@ -1,5 +1,30 @@
 # Validation status
 
+## Focused-field regression checks — 2026-10-03
+
+- Helper suite: 39 tests passed, including focused parsing/dispatch, placeholder
+  preflight/redaction, expanded-fixture CLI rejection, focus-session recording,
+  project formatter inheritance and launch-log filtering.
+- Flutter fixture: 4 widget tests passed with recording disabled and again with
+  integration/recording flags enabled. SearchAnchor input replacement, clearing,
+  callbacks, missing focus and switching between unkeyed fields were exercised.
+- Helper analysis (including infos), full Flutter fixture analysis, generated-output
+  comparison and existing Android verdict unit tests passed. No nested analyzer
+  options or lint suppressions were introduced.
+- A clean local Skills CLI installation passed locked dependency setup, helper
+  analysis, MCP-backend feature validation and generated-output comparison. Existing
+  customized bootstrap preservation is also covered by the helper suite.
+- Agent Skills reference validation passed (`uvx --from skills-ref agentskills validate`).
+  The bundled skill-creator quick validator rejects the pre-existing standard
+  `compatibility` frontmatter field; that metadata was preserved.
+
+The focused step's Marionette MCP schema and CLI limitation were checked against
+installed 0.6.0 source. Live MCP replay and native Patrol execution of the new focused
+scenario were not run in this revision. The Android suite now has five expected native
+tests; earlier native results below describe the prior four-test suite. Real FVM/Puro
+SDK switching remains unverified; command selection has regression coverage.
+
+
 Verified locally on 2026-09-21 with Flutter 3.44.9, Dart 3.12.2 and iOS 26.5 simulators;
 Android API 36 follow-up verification on 2026-09-22.
 The helper lockfile requires Dart >=3.11. The app resolved Marionette 0.6.0,

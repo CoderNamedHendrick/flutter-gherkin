@@ -15,9 +15,9 @@ default; password/OTP/card hints and explicit sensitive keys always redact even 
 allowlisted. On-screen recording indicator is not supplied; the agent announces state.
 
 On done, stop recording/retain the log and invoke parse-recording. It sorts sequence
-numbers, rejects mixed sessions, collapses consecutive changes to the same field,
+numbers, rejects mixed sessions, collapses consecutive changes within the same field/focus session,
 drops navigation-only noise and deduplicates fixture events only with the same explicit
-interaction ID. A tap/navigation boundary preserves distinct edits; it does not merge
+interaction ID. A tap/navigation/focus boundary preserves distinct edits; it does not merge
 unrelated fixture taps heuristically. Use recorder.fixture() from a deterministic
 fixture selector; suppress its low-level taps through an app-specific reviewed hook if
 needed. Unknown gestures become unresolved gaps; scrolling needs recorder.scrollTo(key)
@@ -34,3 +34,23 @@ Never replace an existing feature silently.
 Custom routers must expose stable route context manually when an observer cannot be
 wired safely. Do not claim automatic route capture for every router. Multi-device
 recording requires explicit user-confirmed interleave segments; see multi-device.md.
+
+Unkeyed input becomes a focused-field step with a placeholder, not a request to add a
+key to an inaccessible framework field. Focus-session IDs distinguish consecutive
+unkeyed edits; older logs without IDs are kept separate conservatively. Confirm that
+the preceding flow really establishes focus before removing `@draft`. Keep unresolved
+placeholders until mapped to fixtures/env values or explicitly reviewed public literals.
+A redacted recording cannot recover the original text. Do not enable blanket public
+capture for focused fields. Repeated conversion requires a new draft name or an explicit
+merge; do not delete an existing feature just to rerun conversion.
+
+Recorder redaction covers recorder events only. The launch helper separately filters
+known credential values from environment/dart-define files, credential URL query
+parameters, and Basic/Bearer authorization headers before persisting stdout/stderr.
+Replay evidence also filters resolved input placeholders. This is best-effort filtering,
+not a guarantee for arbitrary app logging or screenshots; inspect the app's logger and
+avoid logging credentials at their source. Gitignored logs are still local files.
+
+Hot reload preserves existing State objects, including initialized `late final` fields.
+Use hot restart when validating changes to those initializers or startup integration;
+re-establish the scenario preconditions after restarting.

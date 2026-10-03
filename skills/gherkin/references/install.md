@@ -49,3 +49,11 @@
 
 Never use the installed recorder as a guarantee the application's own logging is safe.
 Disable sensitive application logs for test accounts and keep all evidence ignored.
+
+When upgrading an existing project, compare its copied recording harness with the
+current asset and merge the focus-session changes while preserving custom hooks.
+Scaffold deliberately preserves existing files; reinstalling the skill alone does not
+refresh project-owned harness code. Older recordings without focus IDs still convert,
+but unkeyed edits cannot be safely collapsed. Focused Patrol entry needs no bootstrap
+migration because its helper is generated with each test that uses it. Keep the
+project's existing analyzer configuration; never add integration_test analyzer options.

@@ -18,6 +18,16 @@ class _FixtureAppState extends State<FixtureApp> {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
+            SearchAnchor(
+              builder: (context, controller) => TextButton(
+                key: const ValueKey<String>('open_search'),
+                onPressed: controller.openView,
+                child: const Text('Search'),
+              ),
+              suggestionsBuilder: (context, controller) => [
+                Text('Query: ${controller.text}'),
+              ],
+            ),
             const TextField(
               key: ValueKey<String>('name_field'),
               decoration: InputDecoration(labelText: 'Name'),

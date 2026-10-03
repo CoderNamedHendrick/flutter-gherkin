@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'config.dart';
 import 'dialect.dart';
+import 'redaction.dart';
 
 abstract class Driver {
+  Backend get backend;
   Future<void> action(Step step);
   Future<List<Map<String, dynamic>>> elements();
   Future<void> screenshot(String path);
@@ -12,6 +14,8 @@ abstract class Driver {
 }
 
 class CliDriver implements Driver {
+  @override
+  Backend get backend => Backend.marionetteCli;
   final String uri;
   final String executable;
   CliDriver(this.uri, {this.executable = 'marionette'});
@@ -37,6 +41,9 @@ class CliDriver implements Driver {
 
   @override
   Future<void> action(Step s) async {
+    if (!s.supports(backend)) {
+      throw GherkinException('${s.kind} unsupported by ${backend.name}');
+    }
     final args = s.kind == 'enter'
         ? ['enter-text', '--key', s.args[1], '--input', s.args[0]]
         : [
@@ -127,6 +134,7 @@ Future<Map<String, dynamic>> runSuite(
   Map<String, Driver> drivers, {
   bool confirmProduction = false,
   Duration assertionTimeout = const Duration(seconds: 5),
+  String Function(String) valueResolver = resolveValue,
 }) async {
   c.guard(confirmProduction: confirmProduction);
   if ((Set<Driver>.identity()..addAll(drivers.values)).length !=
@@ -136,11 +144,21 @@ Future<Map<String, dynamic>> runSuite(
     );
   }
 
+  final secrets = <String>[];
+  final resolvedInputs = <String, String>{};
   for (final f in features) {
-    validateSupport(f, 'marionette');
+    for (final backend in drivers.values.map((d) => d.backend).toSet()) {
+      validateSupport(f, backend, expand: c.expand);
+    }
     for (final s in f.allSteps) {
       for (final expanded in c.expand(s)) {
-        if (expanded.kind == 'enter') resolveValue(expanded.args[0]);
+        if (expanded.textInput) {
+          final value = resolvedInputs.putIfAbsent(
+            expanded.args[0],
+            () => valueResolver(expanded.args[0]),
+          );
+          if (isPlaceholder(expanded.args[0])) secrets.add(value);
+        }
       }
       if (s.kind == 'actor' &&
           (!drivers.containsKey(s.args[0]) ||
@@ -151,6 +169,7 @@ Future<Map<String, dynamic>> runSuite(
       }
     }
   }
+  final redactor = LogRedactor.fromConfig(c, secrets: secrets);
   final keys = keyManifest(c.appRoot);
   final evidence = Directory(
     inside(
@@ -219,12 +238,13 @@ Future<Map<String, dynamic>> runSuite(
                   }
                 }
                 await driver.action(
-                  s.kind == 'enter'
+                  s.textInput
                       ? Step(
                           s.kind,
-                          [resolveValue(s.args[0]), s.args[1]],
+                          [resolvedInputs[s.args[0]]!, ...s.args.skip(1)],
                           s.line,
                           s.source,
+                          s.support,
                         )
                       : s,
                 );
@@ -235,7 +255,7 @@ Future<Map<String, dynamic>> runSuite(
             passed = false;
             result['status'] = 'FAIL';
             result['error'] = e is GherkinException
-                ? e.message
+                ? redactor.redact(e.message)
                 : 'Driver failure (details suppressed)';
             if (driver != null) {
               final screenshot = p.join(
@@ -254,21 +274,7 @@ Future<Map<String, dynamic>> runSuite(
                 _
               ) {} // recovery observation, never continue past failure
               try {
-                var logs = await driver.logs();
-                for (final feature in features) {
-                  for (final step
-                      in feature.allSteps
-                          .expand(c.expand)
-                          .where(
-                            (s) =>
-                                s.kind == 'enter' && isPlaceholder(s.args[0]),
-                          )) {
-                    final secret = resolveValue(step.args[0]);
-                    if (secret.isNotEmpty) {
-                      logs = logs.replaceAll(secret, '[REDACTED]');
-                    }
-                  }
-                }
+                final logs = redactor.redact(await driver.logs());
                 final path = p.join(
                   evidence.path,
                   'failure-${checkpoint++}.log',

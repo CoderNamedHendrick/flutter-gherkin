@@ -14,6 +14,7 @@ the previous keyword. Assertions belong to Then; actions cannot be Then.
 | `I tap the widget keyed "key"` | Both |
 | `I tap the exact text "text"` | Both; exactly one target for actions |
 | `I enter "value" into the widget keyed "key"` | Both |
+| `I enter "value" into the focused field` | Marionette MCP and Patrol; no CLI fallback |
 | `I scroll to the widget keyed "key"` | Both |
 | `I scroll to the exact text "text"` | Both |
 | `I wait 100 milliseconds` | Both; integer 0–30000 |
@@ -39,6 +40,9 @@ platform adapter and test it before expanding compiler support.
 Visibility means a currently hittable on-screen match. Absent means zero visible
 matches, not absence from offscreen application state. Counts count exposed matches;
 custom wrappers can expose duplicate text. Prefer a key on the intended control.
+An overlay that intercepts hit tests can make visible text unhittable. For an overlay
+intended to allow interaction through it, `IgnorePointer` may be appropriate; inspect
+the UI intent before proposing app changes.
 Marionette must expose the widget via configuration before absence/count assertions
 are meaningful. Assertions poll up to five seconds; a successful tap alone proves no outcome.
 
@@ -63,3 +67,13 @@ keys is rejected. Additional sensitive fields belong in recorder/config policy.
 
 `@draft` is reserved: syntax validation is possible, but execution/generation reject it.
 A recorded action list remains draft until gaps are resolved and assertions confirmed.
+
+Focused entry replaces the text of the `EditableText` owning primary focus, including
+clearing with an empty value, and triggers normal text-change callbacks. A preceding
+action or autofocus must establish focus; missing/non-editable focus is an error.
+Use it for internal fields such as a SearchAnchor search view when no stable keyed
+ancestor contains the field. Inspect selector ancestry before proposing UI refactors.
+Keys on sibling widgets cannot select the field. Keyed entry remains preferred when
+available. Focused input cannot infer sensitivity from a selector: keep placeholders
+for unknown/protected values, and use literals only for explicitly reviewed public input.
+Recorder drafts retain placeholders for all unkeyed input.

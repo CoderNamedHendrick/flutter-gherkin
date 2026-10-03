@@ -26,7 +26,7 @@ Future<void> main() async {
     'lib',
     'test',
   ]);
-  await run(scripts, 'dart', ['analyze']);
+  await run(scripts, 'dart', ['analyze', '--fatal-infos']);
   await run(scripts, 'dart', ['test']);
   final app = '$root/test/fixtures/minimal_app';
   await run(app, 'flutter', ['pub', 'get', '--enforce-lockfile']);

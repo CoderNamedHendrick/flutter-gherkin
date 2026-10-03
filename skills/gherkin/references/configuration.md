@@ -12,6 +12,7 @@ version: 1
 app_root: .
 entrypoint: lib/main.dart
 flutter_command: [flutter] # [fvm, flutter] or [puro, flutter]
+# dart_command: [custom-dart] # optional override for a custom Flutter wrapper
 flavor: null
 environment: local
 allowed_environments: [local]
@@ -56,3 +57,9 @@ Credentials remain in the invoking environment or ignored local define files. Th
 configuration contains references and test facts, never values. Recorder policy must
 be passed into `GherkinRecorder` by the app: YAML does not magically configure a mobile
 binary. Default recording redacts every text input; explicitly allowlist public fields.
+
+Generation derives the matching Dart command from `flutter_command`: `flutter` →
+`dart`, `fvm flutter` → `fvm dart`, `puro flutter` → `puro dart`, or the sibling Dart
+executable for an explicit Flutter path. Custom wrappers can set `dart_command`.
+Formatter settings are inherited from the destination path's existing configuration;
+no analyzer file is created under `integration_test/`.

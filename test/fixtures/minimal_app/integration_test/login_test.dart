@@ -10,11 +10,11 @@ void main() {
   patrolTest("Fixture form: Submit a name", ($) async {
     await startApp($, environment: "local", production: false);
     // Environment enforced by bootstrap and execution preflight.
-    await $(find.byKey(ValueKey<String>("name_field"))).tap();
-    await $(find.byKey(ValueKey<String>("name_field"))).enterText("Ada");
-    await $(find.byKey(ValueKey<String>("submit"))).tap();
-    await assertVisible($, find.byKey(ValueKey<String>("result")), null);
+    await $(find.byKey(const ValueKey<String>("name_field"))).tap();
+    await $(find.byKey(const ValueKey<String>("name_field"))).enterText("Ada");
+    await $(find.byKey(const ValueKey<String>("submit"))).tap();
+    await assertVisible($, find.byKey(const ValueKey<String>("result")), null);
     await assertVisible($, find.text("Complete"), 1);
-    await assertVisible($, find.byKey(ValueKey<String>("missing")), 0);
+    await assertVisible($, find.byKey(const ValueKey<String>("missing")), 0);
   }, tags: ["smoke"]);
 }

@@ -203,7 +203,7 @@ void main() {
       expect(r.feature, isNot(contains('    Then ')));
       expect(parseFeature(r.feature).tags, ['draft']);
       expect(
-        () => validateSupport(parseFeature(r.feature), 'marionette'),
+        () => validateSupport(parseFeature(r.feature), Backend.marionetteMcp),
         throwsA(isA<GherkinException>()),
       );
     },
@@ -446,7 +446,7 @@ void main() {
     );
     final f = parseFeature('Feature: A\n Scenario: S\n  Given I use actor "a"');
     expect(
-      () => validateSupport(f, 'patrol'),
+      () => validateSupport(f, Backend.patrol),
       throwsA(isA<GherkinException>()),
     );
   });
@@ -538,6 +538,8 @@ void main() {
 }
 
 class FakeDriver implements Driver {
+  @override
+  Backend get backend => Backend.marionetteMcp;
   FakeDriver({this.label = '', this.timeline});
   final String label;
   final List<String>? timeline;

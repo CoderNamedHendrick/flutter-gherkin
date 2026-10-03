@@ -44,6 +44,7 @@ Recording convertRecording(
         'id',
         'type',
         'route',
+        'focus',
       ]) {
         if (event[key] != null && event[key] is! String) {
           throw const FormatException();
@@ -76,11 +77,13 @@ Recording convertRecording(
   }
   final collapsed = <Map<String, dynamic>>[];
   for (final e in events) {
-    if (e['action'] == 'nav') continue; // Context only, never an assertion.
     if (collapsed.isNotEmpty &&
         e['action'] == 'enter_text' &&
         collapsed.last['action'] == 'enter_text' &&
-        e['key'] == collapsed.last['key']) {
+        e['key'] == collapsed.last['key'] &&
+        e['focus'] == collapsed.last['focus'] &&
+        ((e['key'] is String && (e['key'] as String).isNotEmpty) ||
+            (e['focus'] is String && (e['focus'] as String).isNotEmpty))) {
       collapsed.removeLast();
     }
     if (collapsed.isNotEmpty &&
@@ -99,6 +102,7 @@ Recording convertRecording(
   final gaps = <Map<String, dynamic>>[];
   String q(dynamic s) => jsonEncode(s.toString());
   for (final e in collapsed) {
+    if (e['action'] == 'nav' || e['action'] == 'focus') continue;
     final key = e['key'] as String?;
     final text = e['text'] as String?;
     String? body;
@@ -121,12 +125,19 @@ Recording convertRecording(
           ? raw
           : '\${fixture:${key.replaceAll(RegExp(r'[^A-Za-z0-9_]'), '_')}}';
       body = 'I enter ${q(value)} into the widget keyed ${q(key)}';
+    } else if (e['action'] == 'enter_text') {
+      // Unkeyed fields cannot be classified public; never recover raw input.
+      final raw = e['value'] as String? ?? '';
+      final focus = e['focus'] as String?;
+      final id = focus != null && RegExp(r'^[A-Za-z0-9_]+$').hasMatch(focus)
+          ? 'unkeyed_field_$focus'
+          : 'unkeyed_field';
+      final value = isPlaceholder(raw) ? raw : '\${fixture:$id}';
+      body = 'I enter ${q(value)} into the focused field';
     } else if (e['action'] == 'fixture' && e['id'] is String) {
       body = 'I select the fixture ${q(e['id'])}';
     }
-    if (key == null &&
-            ['tap', 'enter_text', 'scroll_to'].contains(e['action']) ||
-        body == null) {
+    if (body == null) {
       // Never copy values, text, or route parameters into gap diagnostics.
       gaps.add({
         'seq': e['seq'],

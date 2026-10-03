@@ -59,7 +59,7 @@ def main():
     parser.add_argument("--device", required=True, help="Selected emulator serial")
     parser.add_argument("--adb", default=shutil.which("adb") or "adb")
     parser.add_argument("--repeat", type=int, default=1)
-    parser.add_argument("--expected-tests", type=int, default=4)
+    parser.add_argument("--expected-tests", type=int, default=5)
     parser.add_argument("--timeout", type=int, default=600)
     args = parser.parse_args()
     if min(args.repeat, args.expected_tests, args.timeout) < 1:

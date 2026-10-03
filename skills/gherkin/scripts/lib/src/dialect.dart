@@ -7,7 +7,9 @@ class GherkinException implements Exception {
   String toString() => message;
 }
 
-enum Support { both, marionette, patrol, manual }
+enum Backend { marionetteMcp, marionetteCli, patrol }
+
+enum Support { both, marionette, mcpAndPatrol, patrol, manual }
 
 class Step {
   final String kind;
@@ -23,6 +25,14 @@ class Step {
     this.support = Support.both,
   ]);
   bool get assertion => kind.startsWith('assert_');
+  bool get textInput => kind == 'enter' || kind == 'enter_focused';
+  bool supports(Backend backend) => switch (support) {
+    Support.both => true,
+    Support.marionette => backend == Backend.marionetteMcp,
+    Support.mcpAndPatrol => backend != Backend.marionetteCli,
+    Support.patrol => backend == Backend.patrol,
+    Support.manual => false,
+  };
   Map<String, Object> toJson() => {
     'kind': kind,
     'args': args,
@@ -91,6 +101,11 @@ Step parseStep(String text, int line) {
       match('I tap the widget keyed $quoted', 'tap_key') ??
       match('I tap the exact text $quoted', 'tap_text') ??
       match('I enter $quoted into the widget keyed $quoted', 'enter') ??
+      match(
+        'I enter $quoted into the focused field',
+        'enter_focused',
+        support: Support.mcpAndPatrol,
+      ) ??
       match('I scroll to the widget keyed $quoted', 'scroll_key') ??
       match('I scroll to the exact text $quoted', 'scroll_text') ??
       match('I select the fixture $quoted', 'fixture') ??
@@ -106,7 +121,7 @@ Step parseStep(String text, int line) {
         support: Support.manual,
       );
   if (action != null) {
-    if (action.args.any((a) => a.isEmpty) && action.kind != 'enter') {
+    if (action.args.any((a) => a.isEmpty) && !action.textInput) {
       throw GherkinException('line $line: empty selector');
     }
     if (action.kind == 'enter' &&
@@ -250,13 +265,15 @@ Feature parseFeature(String source, {String path = '<feature>'}) {
   return feature;
 }
 
-void validateSupport(Feature f, String backend) {
-  for (final s in f.allSteps) {
-    if (s.support == Support.manual ||
-        (backend == 'patrol' && s.support == Support.marionette) ||
-        (backend == 'marionette' && s.support == Support.patrol)) {
+void validateSupport(
+  Feature f,
+  Backend backend, {
+  Iterable<Step> Function(Step)? expand,
+}) {
+  for (final s in f.allSteps.expand(expand ?? (s) => [s])) {
+    if (!s.supports(backend)) {
       throw GherkinException(
-        '${f.path}:${s.line}: ${s.kind} unsupported by $backend (${s.support.name})',
+        '${f.path}:${s.line}: ${s.kind} unsupported by ${backend.name} (${s.support.name})',
       );
     }
   }

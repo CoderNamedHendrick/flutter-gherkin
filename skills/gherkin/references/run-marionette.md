@@ -2,7 +2,9 @@
 
 Resolve features through the helper: `login`, `gherkin/features/login.feature`, a
 folder, or `gherkin`. Validate the entire suite and all fixture adapters before launch.
-Reject Patrol-only/manual-only steps. Route a scenario to Patrol only when explicitly
+Use `validate --backend marionetteMcp` or `validate --backend marionetteCli`
+for the selected driver, including expanded fixture adapters. Reject unsupported steps
+before any device actions. Route a scenario to Patrol only when explicitly
 requested; never drop native steps. Apply environment restrictions to reconnects too:
 verify the already-running app's launch facts, not just its websocket address.
 
@@ -35,5 +37,12 @@ reports. Redact known resolved placeholders from collected logs and inspect appl
 logging policy. Report only tests actually executed, including failed assertions.
 
 Prefer key → exact text → widget type → coordinates during diagnosis. Only key/exact
-text belong to the portable dialect. Type/coordinates are brittle investigative aids;
+text selectors and the explicit focused-field input step belong to the dialect. Type/coordinates are brittle investigative aids;
 propose keys for any persistent feature and obtain approval before app edits.
+
+For focused entry, inspect the loaded `enter_text` schema and require focused-element
+support before launch/replay. Map to `focused_element: true` and `input: <resolved value>`
+without a key; resolve env/fixture placeholders before dispatch and never include their
+values in reports. Marionette CLI 0.6.0 requires a key and is rejected for this step.
+Do not substitute coordinates or refactor the UI as a silent fallback. If MCP lacks
+the advertised capability, report the limitation before executing the scenario.

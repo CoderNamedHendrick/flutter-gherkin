@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'config.dart';
 import 'dialect.dart';
+import 'redaction.dart';
 
 String? vmUri(String text) {
   for (final line in const LineSplitter().convert(text).reversed) {
@@ -78,6 +79,7 @@ Future<void> launch(
   bool confirmProduction = false,
 }) async {
   c.guard(confirmProduction: confirmProduction);
+  final redactor = LogRedactor.fromConfig(c);
   final dir = Directory(inside(c.root, 'gherkin/evidence/logs'))
     ..createSync(recursive: true);
   final file = File(
@@ -93,18 +95,20 @@ Future<void> launch(
   var ready = false;
   void line(String text) {
     // --machine wraps app.log in JSON. Unwrap before writing recorder events.
-    String value = text;
+    final values = <String>[];
     try {
       final events = jsonDecode(text);
       if (events is List) {
         for (final e in events) {
           if (e is Map && e['event'] == 'app.log') {
-            value = e['params']['log'] as String;
+            values.add(e['params']['log'] as String);
           }
         }
       }
     } catch (_) {}
-    sink.writeln(value);
+    for (final value in values.isEmpty ? [text] : values) {
+      sink.writeln(redactor.redact(value));
+    }
     final uri = vmUri(text);
     if (uri != null && !ready) {
       ready = true;
@@ -115,11 +119,11 @@ Future<void> launch(
   final a = process.stdout
       .transform(utf8.decoder)
       .transform(const LineSplitter())
-      .listen(line);
+      .forEach(line);
   final b = process.stderr
       .transform(utf8.decoder)
       .transform(const LineSplitter())
-      .listen(line);
+      .forEach(line);
   final signal = ProcessSignal.sigint.watch().listen((_) {
     process.kill();
   });
@@ -128,8 +132,7 @@ Future<void> launch(
   });
   final code = await process.exitCode;
   timer.cancel();
-  await a.cancel();
-  await b.cancel();
+  await Future.wait([a, b]);
   await signal.cancel();
   await sink.close();
   if (code != 0 || !ready) {

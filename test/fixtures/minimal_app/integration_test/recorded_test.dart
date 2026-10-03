@@ -10,9 +10,9 @@ void main() {
   patrolTest("Captured fixture form: Replay captured actions", ($) async {
     await startApp($, environment: "local", production: false);
     // Environment enforced by bootstrap and execution preflight.
-    await $(find.byKey(ValueKey<String>("name_field"))).tap();
-    await $(find.byKey(ValueKey<String>("name_field"))).enterText("Ada");
-    await $(find.byKey(ValueKey<String>("submit"))).tap();
-    await assertVisible($, find.byKey(ValueKey<String>("result")), null);
+    await $(find.byKey(const ValueKey<String>("name_field"))).tap();
+    await $(find.byKey(const ValueKey<String>("name_field"))).enterText("Ada");
+    await $(find.byKey(const ValueKey<String>("submit"))).tap();
+    await assertVisible($, find.byKey(const ValueKey<String>("result")), null);
   }, tags: []);
 }
