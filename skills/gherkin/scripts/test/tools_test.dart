@@ -38,6 +38,9 @@ void main() {
     'version compatibility distinguishes project CLI, old global CLI and unknown releases',
     () {
       expect(patrolCompatibility('4.8.0', '4.10.0'), true);
+      expect(patrolCompatibility('4.9.0', '4.11.0'), true);
+      expect(patrolCompatibility('4.9.0', '4.8.0'), false);
+      expect(patrolCompatibility('4.10.0', '4.11.0'), isNull);
       expect(patrolCompatibility('3.10.0', '4.10.0'), false);
       expect(patrolCompatibility('5.0.0', '5.0.0'), isNull);
     },
@@ -488,6 +491,34 @@ void main() {
       );
     },
   );
+  test('CLI requests explicit visibility with Marionette 0.7', () async {
+    final executable = File(p.join(root.path, 'marionette'));
+    executable.writeAsStringSync(r'''#!/bin/sh
+if [ "$3" != "get-interactive-elements" ] || [ "$4" != "--compaction=none" ]; then
+  printf 'Found 1 interactive element(s):\nType: Text, Text: "Hello"\n'
+else
+  printf 'Found 2 interactive element(s):\nType: Text, Text: "Hello", visible: true\nType: Text, Text: "Hello", visible: false\n'
+fi
+''');
+    expect(Process.runSync('chmod', ['+x', executable.path]).exitCode, 0);
+    final tree = await CliDriver(
+      'unused',
+      executable: executable.path,
+    ).elements();
+    expect(
+      assertionMatches(
+        parseStep('the exact text "Hello" appears exactly 1 times', 1),
+        tree,
+      ),
+      true,
+    );
+    expect(
+      () => parseCliElements(
+        'Found 1 interactive element(s):\nType: Text, Text: "Hello"\n',
+      ),
+      throwsA(isA<GherkinException>()),
+    );
+  });
   test(
     'multi-device runner preserves serial order with distinct drivers',
     () async {

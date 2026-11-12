@@ -11,8 +11,10 @@ verify the already-running app's launch facts, not just its websocket address.
 Prefer loaded MCP capabilities with their actual advertised argument schemas. Launch
 or reconnect, map a dedicated connection to the device and require a non-empty tree.
 For shell-only agents use `marionette help-ai`, then the helper's `run-cli` with --uri.
-CLI tree parsing is deliberately strict: changed or ambiguous multiline/quoted output
-fails and asks for MCP/source/screenshot inspection. MCP may also return formatted text; if exact counts remain ambiguous, report unsupported rather than inferring success. v1 CLI fallback is single-device.
+The CLI helper requires Marionette CLI 0.7.0 or newer and requests
+`--compaction=none` so visibility remains explicit. CLI tree parsing is deliberately
+strict: changed or ambiguous multiline/quoted output fails and asks for
+MCP/source/screenshot inspection. MCP may also return formatted text; if exact counts remain ambiguous, report unsupported rather than inferring success. v1 CLI fallback is single-device.
 
 Build a key manifest once from app source (search ValueKey<String>, ValueKey and shared
 key constants). It is a hint, not exhaustive for dynamically generated keys. Execute
@@ -43,6 +45,7 @@ propose keys for any persistent feature and obtain approval before app edits.
 For focused entry, inspect the loaded `enter_text` schema and require focused-element
 support before launch/replay. Map to `focused_element: true` and `input: <resolved value>`
 without a key; resolve env/fixture placeholders before dispatch and never include their
-values in reports. Marionette CLI 0.6.0 requires a key and is rejected for this step.
+values in reports. The helper still rejects this step through CLI (0.6.0 required
+a key; 0.7.0 adds `--focused`, but helper capability negotiation for it is not implemented).
 Do not substitute coordinates or refactor the UI as a silent fallback. If MCP lacks
 the advertised capability, report the limitation before executing the scenario.

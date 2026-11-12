@@ -9,7 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  marionette_flutter: ^0.6.0
+  marionette_flutter: ^0.7.0
 
 dev_dependencies:
   flutter_test:

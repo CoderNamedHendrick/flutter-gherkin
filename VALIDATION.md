@@ -1,5 +1,44 @@
 # Validation status
 
+## Dependency refresh — 2026-11-11 (completed 2026-11-12)
+
+Updated all three Dart package resolutions to the newest versions compatible with
+Flutter 3.44.9 / Dart 3.12.2. Both apps now use Marionette 0.7.0; the native fixture
+uses Patrol 4.11.0, Patrol CLI 4.9.0, Patrol MCP 0.2.2, Patrol Finders 3.7.0 and
+Patrol Log 0.10.2. Helper dependency constraints were refreshed too (including
+crypto 3.0.8, yaml 3.1.4, yaml_edit 2.2.4, test 1.33.0 and lints 6.1.0).
+
+`pub outdated` reports no further resolvable upgrades. Newer transitive versions
+remain blocked by the installed SDK or upstream constraints; no overrides were
+added and the Flutter SDK was not changed. The helper lockfile still supports
+Dart >=3.11. Local Marionette CLI and Patrol CLI were upgraded to 0.7.0 and 4.9.0.
+
+Marionette 0.7 defaults to compact trees that omit `visible: true`. CLI replay now
+requires CLI 0.7.0+ and requests `--compaction=none`, preserving strict visibility
+and exact-count validation. A regression test covers this. Doctor recognizes the
+verified Patrol CLI 4.9 family while leaving unknown future families unverified.
+The focused-field step remains MCP/Patrol-only in this helper; upstream CLI 0.7
+has `--focused`, but adding helper support is outside this dependency refresh.
+
+- `dart tooling/verify.dart`: passed; 40 helper tests, 4 widget tests in each of
+  normal and integration/recording modes, analysis, formatting and generated sync.
+- Flavored fixture analysis: passed.
+- Android verdict unit tests: 2 passed.
+- iOS 26.5 simulator native suite: all 5 passed, zero failures/skips, process exit 0.
+- Android API 36 disposable emulator native suite: all 5 passed, zero failures,
+  errors or skips, process exit 0 and `BUILD SUCCESSFUL`; logcat remained active.
+  Native XML and verdict: `.test-work/android-smoke-1794410926534580000/run-1/`.
+- Marionette 0.7 live iOS CLI login replay: passed actions, visibility, exact count,
+  absence and screenshot capture. MCP connected and returned a non-empty tree.
+- Patrol MCP 0.2.2: initialized and advertised 6 tools.
+- Official Agent Skills validation: passed. A clean release extraction passed
+  locked dependency setup, analysis and all 40 helper tests.
+
+Local evidence is under `.test-work/upgrade-*.log` and fixture `gherkin/evidence/`.
+Release 0.1.1 contains this verified dependency resolution. Earlier dated results
+below are historical and do not describe this dependency resolution.
+
+
 ## Focused-field regression checks — 2026-10-03
 
 - Helper suite: 39 tests passed, including focused parsing/dispatch, placeholder

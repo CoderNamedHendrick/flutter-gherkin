@@ -284,7 +284,7 @@ String doctorJson(List<Map<String, String>> rows) =>
       'ok': !rows.any((r) => r['status']!.startsWith('FAIL')),
     });
 
-// Conservative known ranges from upstream compatibility table (2026-09-21).
+// Conservative known ranges from upstream compatibility table (2026-11-11).
 // Unknown major/minor families require fresh upstream verification, never a guessed PASS.
 bool? patrolCompatibility(String? cli, String? package) {
   List<int>? parse(String? value) {
@@ -307,7 +307,7 @@ bool? patrolCompatibility(String? cli, String? package) {
 
   bool range(List<int> value, List<int> min, List<int> max) =>
       compare(value, min) >= 0 && compare(value, max) <= 0;
-  if (c[0] == 4 && c[1] >= 7 && c[1] <= 8) {
+  if (c[0] == 4 && c[1] >= 7 && c[1] <= 9) {
     if (p[0] > 4) return null;
     return p[0] == 4 && p[1] >= 9;
   }

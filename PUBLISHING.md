@@ -1,78 +1,44 @@
 # Publishing flutter-gherkin
 
-The distribution/repository name is **flutter-gherkin**. The single installed skill
-remains **gherkin**, invoked as `$gherkin` or through natural-language requests.
-The first prepared release is **0.1.0**.
+The repository is [CoderNamedHendrick/flutter-gherkin](https://github.com/CoderNamedHendrick/flutter-gherkin).
+The distribution is **flutter-gherkin**; the installed skill remains **gherkin**.
+The current release version is **0.1.1**.
 
-This uses [skills.sh and the Skills CLI](https://skills.sh/docs/faq), which install
-skills from GitHub repositories. There is no npm package to publish and no separate
-skills.sh upload command. Listing follows installations reported by the Skills CLI;
-publication does not guarantee immediate ranking or discovery.
-
-## Prepared destination
-
-The proposed public source is `CoderNamedHendrick/flutter-gherkin`, using the currently
-authenticated GitHub account. No repository was created or pushed during preparation.
-Change the owner below if publishing through an organization instead.
-
-After publication, the install command will be:
+This is an Agent Skills repository, not an npm or pub.dev package. Users install with:
 
 ```sh
 npx skills add CoderNamedHendrick/flutter-gherkin --skill gherkin -a universal
 ```
 
-## Release contents and checks
+## Prepare a release
 
-`skills/gherkin/` contains the complete installable skill, including its MIT license,
-version metadata, references, harness assets and locked Dart helper package. Keep the
-helper `pubspec.lock`; users run `dart pub get --enforce-lockfile` after installing.
-The helper package stays `publish_to: none` because it ships inside the skill.
+Update `skills/gherkin/SKILL.md` metadata.version and
+`skills/gherkin/scripts/pubspec.yaml` version together. Keep the helper lockfile:
+installed helpers use `dart pub get --enforce-lockfile`.
 
 ```sh
 dart tooling/verify.dart
 python3 -m unittest discover -s tooling -p 'test_android_smoke.py'
-skills-ref validate skills/gherkin
+uvx --from skills-ref agentskills validate skills/gherkin
 python3 tooling/prepare_release.py
 ```
 
-`skills-ref` is the official [Agent Skills reference validator](https://github.com/agentskills/agentskills/tree/main/skills-ref).
-Mobile smoke checks require selected devices; see [validation results](VALIDATION.md).
-Version 0.1.0 has verified iOS and Android fixture runs, with human recording acceptance,
-live multi-device execution and other documented coverage limits still outstanding.
+Run native smoke on selected devices and record actual results in [VALIDATION.md](VALIDATION.md).
+The release builder creates a deterministic ZIP, SHA-256 checksum and file manifest
+under ignored `dist/`, excluding caches, fixtures, builds and evidence. These are
+optional GitHub release assets; Skills CLI installs use the repository source.
 
-The release builder writes these ignored artifacts:
+## Publish an authorized release
 
-- `dist/flutter-gherkin-0.1.0.zip`: the installable `gherkin/` directory.
-- `dist/flutter-gherkin-0.1.0.zip.sha256`: archive checksum.
-- `dist/flutter-gherkin-0.1.0.manifest.json`: file inventory and per-file hashes.
-
-The archive excludes SDK caches, builds, fixtures, evidence, local device settings and
-repository development tooling. Repeated builds from identical inputs produce identical
-bytes. Version changes must update both SKILL.md metadata and scripts/pubspec.yaml.
-The archive is an optional release attachment; normal `npx skills add` installs from
-the repository's `skills/gherkin/` directory.
-
-## Publish when authorized
-
-The working directory is not yet a Git repository. Review the source files and ignored
-files before making the initial commit. The steps below are instructions only and were
-not executed during preparation:
+Review the diff and commit the verified source, then push to `main`. Create the
+release against that exact commit, with its corresponding assets and release notes:
 
 ```sh
-git init -b main
-git add README.md LICENSE VALIDATION.md PUBLISHING.md .gitignore skills test tooling
-git diff --cached --stat
-# Review staged contents before continuing.
-git commit -m "Prepare flutter-gherkin 0.1.0"
-gh repo create CoderNamedHendrick/flutter-gherkin --public --source . --remote origin --push
+git push origin main
+gh release create v0.1.1 dist/flutter-gherkin-0.1.1.zip dist/flutter-gherkin-0.1.1.zip.sha256 dist/flutter-gherkin-0.1.1.manifest.json --repo CoderNamedHendrick/flutter-gherkin --target "$(git rev-parse HEAD)" --title "flutter-gherkin 0.1.1" --notes-file /path/to/release-notes.md
 ```
 
-Test the public install in an empty temporary project using the command above, then
-verify the installed helper's locked setup and a feature validation. Once that succeeds,
-an optional GitHub release can attach the prepared ZIP, checksum and manifest:
-
-```sh
-gh release create v0.1.0 dist/flutter-gherkin-0.1.0.zip dist/flutter-gherkin-0.1.0.zip.sha256 dist/flutter-gherkin-0.1.0.manifest.json --repo CoderNamedHendrick/flutter-gherkin --title "flutter-gherkin 0.1.0" --notes "Initial universal gherkin skill. See README and VALIDATION.md for setup and verified coverage."
-```
-
-Public GitHub installation and skills.sh listing can only be checked after publication.
+Verify the public release and install the tagged skill into a clean destination.
+Run locked dependency setup, helper analysis and tests from the installed copy.
+There is no separate skills.sh upload; listing/discovery follows Skills CLI usage
+and is not guaranteed by creating a GitHub release.

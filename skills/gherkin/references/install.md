@@ -15,7 +15,9 @@
    compatible versions through pub; preserve existing constraints when compatible.
    For missing tools use `dart pub global activate marionette_mcp` and/or
    `dart pub global activate marionette_cli`; respect the selected Dart SDK. A local
-   PUB_CACHE is supported. Avoid reactivating tools that already satisfy compatibility.
+   PUB_CACHE is supported. The CLI replay helper requires Marionette CLI 0.7.0+
+   for explicit tree visibility (`--compaction=none`). Avoid reactivating tools that
+   already satisfy compatibility.
 5. Run `scaffold` with explicit project facts. Existing files stay byte-for-byte intact.
    If upgrading templates, show a diff and merge deliberately. Scaffold does not claim
    installation complete. Do not overwrite config or bootstrap with a template.

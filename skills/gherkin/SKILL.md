@@ -4,7 +4,7 @@ description: Install Flutter Marionette tooling, record manual app interactions 
 license: MIT
 compatibility: Requires Flutter with Dart 3.11 or newer and shell execution. Mobile runs need an emulator, simulator, or test device. MCP is optional.
 metadata:
-  version: "0.1.0"
+  version: "0.1.1"
 ---
 
 # Flutter Gherkin

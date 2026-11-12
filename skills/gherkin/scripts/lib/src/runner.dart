@@ -55,8 +55,9 @@ class CliDriver implements Driver {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> elements() async =>
-      parseCliElements(await invoke(['get-interactive-elements']));
+  Future<List<Map<String, dynamic>>> elements() async => parseCliElements(
+    await invoke(['get-interactive-elements', '--compaction=none']),
+  );
   @override
   Future<void> screenshot(String path) async {
     await invoke(['take-screenshots', '--output', path]);
